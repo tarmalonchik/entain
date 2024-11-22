@@ -30,14 +30,10 @@ services:
     container_name: entain-db
     image: "postgres"
     command: [ "postgres" ]
-#    ports: # todo remove after testing
-#      - "5432:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: core
-#    expose: # todo remove after testing
-#      - 5432
     networks:
       - entain-network
     healthcheck:
