@@ -1,0 +1,52 @@
+version: '3.5'
+services:
+  core:
+    container_name: entain-core
+    build: ./
+    ports:
+      - "8080:8080"
+    environment:
+      POSTGRES_ADDRESS: entain-db
+      POSTGRES_DB: core
+      POSTGRES_PORT: 5432
+      POSTGRES_MIGRATIONSPATH: file:migrations/core
+      POSTGRES_USER: postgres
+      POSTGRES_PASS: postgres
+      APP_HOST: "0.0.0.0"
+    networks:
+      - entain-network
+    expose:
+      - 8080
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: "curl -f http://localhost:8080/_healthz"
+      interval: 30s
+      retries: 5
+      start_period: 20s
+      start_interval: 1s
+  db:
+    container_name: entain-db
+    image: "postgres"
+    command: [ "postgres" ]
+#    ports: # todo remove after testing
+#      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: core
+#    expose: # todo remove after testing
+#      - 5432
+    networks:
+      - entain-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready", "-d", "db_prod" ]
+      interval: 30s
+      retries: 5
+      start_period: 20s
+      start_interval: 1s
+networks:
+  entain-network:
+    external: false
+    name: entain-network
